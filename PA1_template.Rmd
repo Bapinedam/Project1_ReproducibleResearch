@@ -1,0 +1,79 @@
+---
+title: "PA1_template"
+author: "Brayam Pineda"
+output: html_document
+---
+
+## Objective
+
+This file contain the solve to the first project of the Reproducible Research 
+course in Coursera offered by Johns Hopkins University.For it we will to analyze
+the activity dataset that you can find in [Activity monitoring data](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip)
+
+In short, we need to complete five general assignments, they are:
+
+- Loading and preprocessing the data
+- What is mean total number of steps taken per day?
+- What is the average daily activity pattern?
+- Imputing missing values
+- Are there differences in activity patterns between weekdays and weekends?
+
+So let's go
+
+## 1. Loading and preprocessing the data
+
+```{r, echo=TRUE}
+data <- read.csv("activity.csv")
+head(data)
+```
+
+That is not too informative, so we are going to use the *str()* function
+
+```{r}
+str(data)
+```
+We can see that the class of the columns is not the best, so we are going to
+solve this
+
+```{r}
+data$steps <- as.numeric(data$steps)
+data$date <- as.Date(data$date)
+data$interval <- as.numeric(data$interval)
+str(data)
+```
+Is a good practice explore a little more the data before start with the analyze,
+a good way is through the *summary()* function
+
+
+```{r}
+summary(data)
+```
+
+## 2. What is mean total number of steps taken per day?
+
+First we need to transform the data base
+
+```{r, echo=TRUE, message=FALSE}
+library(dplyr)
+data_v2 <- data %>% group_by(date) %>% summarise(Day = sum(steps, na.rm = FALSE))
+data_v2 <- data_v2[!is.na(data_v2$Day), ]
+head(data_v2)
+```
+
+After that, we can do a histogram to see how the data is behavior
+
+```{r, , message=FALSE}
+library(ggplot2)
+ggplot(data = data_v2, aes(x = Day)) + geom_histogram(color="#e9ecef", fill="#69b3a2") +
+  theme_bw() + xlab("Count of the steps by Day") + ylab("")
+```
+By last, the task request us for calculate the *median* and *mean* of the total of
+steps, the easiest way is by the *summary* function and we can to report that
+result in a table
+
+```{r}
+summary(data_v2$Day)
+```
+
+
+
