@@ -155,4 +155,32 @@ summary(complete_data2$Steps)
 
 There are notable differences between both
 
+## 5. Are there differences in activity patterns between weekdays and weekends?
+
+For this part the \color{red}{\verb|weekdays()|}weekdays() function may be of some help here.
+
+- Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is     weekday or weekend day.
+
+```{r}
+data_v5 <- complete_data1
+data_v5$weekday <- weekdays(data_v5$date)
+data_v5$weekday <- gsub("lunes", "weekday", data_v5$weekday)
+data_v5$weekday <- gsub("martes", "weekday", data_v5$weekday)
+data_v5$weekday <- gsub("miércoles", "weekday", data_v5$weekday)
+data_v5$weekday <- gsub("jueves", "weekday", data_v5$weekday)
+data_v5$weekday <- gsub("viernes", "weekday", data_v5$weekday)
+data_v5$weekday <- gsub("sábado", "weekend", data_v5$weekday)
+data_v5$weekday <- gsub("domingo", "weekend", data_v5$weekday)
+```
+
+- Make a panel plot containing a time series plot (i.e. \color{red}{\verb|type = "l"|}type = "l") 
+  of the 5-minute interval (x-axis) and the average number of steps taken, 
+  averaged across all weekday days or weekend days (y-axis)   
+
+```{r}
+data_v6 <- data_v5 %>% group_by(weekday, interval) %>% summarise(`Average of steps` = mean(steps, na.rm = TRUE))
+
+  ggplot(data = data_v6, aes(x = interval, y = `Average of steps`)) + facet_grid(.~weekday) +
+    geom_line() + theme_bw() + xlab("Interval")
+```
 
