@@ -89,24 +89,70 @@ ggplot(data = data_v3, aes(x = interval, y = `Average of steps`)) +
   geom_line() + theme_bw() +
   xlab("Intervals of 5 minutes")
 ```
+
 - Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 ```{r}
 max <- data_v3 %>% filter(`Average of steps` == max(`Average of steps`))
-knitr::kable(max, caption = "Interval with the maximun number of steps"
+knitr::kable(max, caption = ""
        , align = c('c')
        , col.names = c("Interval", "Average of steps")
        , row.names = FALSE
        , justify = 'lcrrcl')
-       # , digits = 1
-       # , format.args = list( decimal.mark = ","))
 ```
+
 In graphic it will be
 
 ```{r}
 ggplot(data = data_v3, aes(x = interval, y = `Average of steps`)) + 
-  geom_line() + theme_bw() + geom_vline(aes(xintercept = 835, colour = "red")) +
+  geom_line() + theme_bw() + geom_vline(aes(xintercept = 835, colour = "red"), size = 1, show.legend = FALSE) +
   xlab("Intervals of 5 minutes")
 ```
+
+## 4. Imputing missing values
+
+- Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with \color{red}{\verb|NA|}NAs)
+
+```{r}
+sum(is.na(data$steps))
+```
+
+- Devise a strategy for filling in all of the missing values in the dataset.
+
+```{r message=FALSE, results='hide', , warning=FALSE}
+library(mice)
+data_v4 <- data
+imputed_data1 <- mice(data_v4)
+complete_data1 <- mice::complete(imputed_data1)
+```
+
+- Make a histogram of the total number of steps taken each day and Calculate and
+  report the mean and median total number of steps taken per day. Do these values
+  differ from the estimates from the first part of the assignment? What is the
+  impact of imputing missing data on the estimates of the total daily number of steps?
+
+```{r, message=FALSE}
+complete_data2 <- complete_data1 %>% group_by(date) %>% summarise(Steps = sum(steps, na.rm = TRUE))
+ggplot(data = complete_data2, aes(x = Steps)) + geom_histogram(color="#e9ecef", fill="#69b3a2") +
+  theme_bw() + xlab("Count of the steps by Day") + ylab("") 
+
+```
+
+Recall the other graphic
+
+```{r, echo=FALSE, message=FALSE}
+ggplot(data = data_v2, aes(x = Day)) + geom_histogram(color="#e9ecef", fill="#69b3a2") +
+  theme_bw() + xlab("Count of the steps by Day") + ylab("")
+```
+
+Although based on the graphic it appear the data have not had important changes 
+the task require us calculate the median and mean
+
+```{r}
+summary(data_v2$Day)
+summary(complete_data2$Steps)
+```
+
+There are notable differences between both
 
 
