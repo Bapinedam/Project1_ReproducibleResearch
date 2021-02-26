@@ -1,7 +1,9 @@
 ---
 title: "PA1_template"
 author: "Brayam Pineda"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ## Objective
@@ -67,6 +69,7 @@ library(ggplot2)
 ggplot(data = data_v2, aes(x = Day)) + geom_histogram(color="#e9ecef", fill="#69b3a2") +
   theme_bw() + xlab("Count of the steps by Day") + ylab("")
 ```
+
 By last, the task request us for calculate the *median* and *mean* of the total of
 steps, the easiest way is by the *summary* function and we can to report that
 result in a table
@@ -74,6 +77,36 @@ result in a table
 ```{r}
 summary(data_v2$Day)
 ```
+## 3. What is the average daily activity pattern?
 
+- Make a time series plot (i.e. \color{red}{\verb|type = "l"|}type = "l") of the
+  5-minute interval (x-axis) and the average number of steps taken, averaged 
+  across all days (y-axis)
+  
+```{r}
+data_v3 <- data %>% group_by(interval) %>% summarise("Average of steps" = mean(steps, na.rm = TRUE))
+ggplot(data = data_v3, aes(x = interval, y = `Average of steps`)) + 
+  geom_line() + theme_bw() +
+  xlab("Intervals of 5 minutes")
+```
+- Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+```{r}
+max <- data_v3 %>% filter(`Average of steps` == max(`Average of steps`))
+knitr::kable(max, caption = "Interval with the maximun number of steps"
+       , align = c('c')
+       , col.names = c("Interval", "Average of steps")
+       , row.names = FALSE
+       , justify = 'lcrrcl')
+       # , digits = 1
+       # , format.args = list( decimal.mark = ","))
+```
+In graphic it will be
+
+```{r}
+ggplot(data = data_v3, aes(x = interval, y = `Average of steps`)) + 
+  geom_line() + theme_bw() + geom_vline(aes(xintercept = 835, colour = "red")) +
+  xlab("Intervals of 5 minutes")
+```
 
 
